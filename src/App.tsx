@@ -10,10 +10,13 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 const App: React.FC = () => {
   const { 
     tasks, 
+    categories,
+    activeFilter,
     addTasks, 
     updateTask, 
     moveTask, 
-    deleteTask 
+    deleteTask,
+    setActiveFilter
   } = useTaskBoard();
   
   const { 
@@ -22,7 +25,7 @@ const App: React.FC = () => {
     settings, 
     sendMessage, 
     updateSettings 
-  } = useChat(addTasks);
+  } = useChat((newTasks, category) => addTasks(newTasks, category));
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -32,9 +35,12 @@ const App: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4">Task Board</h2>
             <Board
               tasks={tasks}
+              categories={categories}
+              activeFilter={activeFilter}
               onTaskUpdate={updateTask}
               onTaskDelete={deleteTask}
               onTaskMove={moveTask}
+              onFilterChange={setActiveFilter}
             />
           </div>
           <div className="h-[600px] flex flex-col">

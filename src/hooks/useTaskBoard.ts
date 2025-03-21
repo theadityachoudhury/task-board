@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { Task, TaskStatus } from '../types/task';
+import { Task, TaskStatus, TaskCategory } from '../types/task';
 
 export const useTaskBoard = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [categories, setCategories] = useState<TaskCategory[]>([]);
+  const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
-  const addTasks = (newTasks: Task[]) => {
+  const addTasks = (newTasks: Task[], category?: TaskCategory) => {
     setTasks(prevTasks => [...prevTasks, ...newTasks]);
+    
+    if (category && !categories.some(c => c.id === category.id)) {
+      setCategories(prev => [...prev, category]);
+    }
   };
 
   const updateTask = (taskId: string, updates: Partial<Task>) => {
@@ -25,15 +31,34 @@ export const useTaskBoard = () => {
   };
 
   const getTasksByStatus = (status: TaskStatus) => {
-    return tasks.filter(task => task.status === status);
+    let filteredTasks = tasks.filter(task => task.status === status);
+    
+    if (activeFilter) {
+      filteredTasks = filteredTasks.filter(task => 
+        activeFilter === 'all' ? true : task.promptId === activeFilter
+      );
+    }
+    
+    return filteredTasks;
+  };
+
+  const getAllTasks = () => {
+    if (activeFilter && activeFilter !== 'all') {
+      return tasks.filter(task => task.promptId === activeFilter);
+    }
+    return tasks;
   };
 
   return {
     tasks,
+    categories,
+    activeFilter,
     addTasks,
     updateTask,
     moveTask,
     deleteTask,
-    getTasksByStatus
+    getTasksByStatus,
+    getAllTasks,
+    setActiveFilter
   };
 };

@@ -6,6 +6,13 @@ export interface Task {
   description: string;
   dueDate: string;
   status: TaskStatus;
-  category?: string;
+  category: string; // Now required
+  promptId: string; // To group tasks by the prompt that created them
   assignee?: string;
+}
+
+export interface TaskCategory {
+  id: string;
+  name: string;
+  color: string;
 }

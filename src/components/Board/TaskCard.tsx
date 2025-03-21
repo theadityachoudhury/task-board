@@ -7,9 +7,15 @@ interface TaskCardProps {
   task: Task;
   onUpdate: (taskId: string, updates: Partial<Task>) => void;
   onDelete: (taskId: string) => void;
+  categoryColor?: string;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, onUpdate, onDelete }) => {
+export const TaskCard: React.FC<TaskCardProps> = ({
+  task,
+  onUpdate,
+  onDelete,
+  categoryColor = 'bg-gray-100 text-gray-800'
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState(task);
 
@@ -42,11 +48,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onUpdate, onDelete }) 
   };
 
   return (
-    <div 
+    <div
       ref={drag as any}
-      className={`bg-white p-4 rounded-lg shadow-md mb-3 cursor-grab ${
-        isDragging ? 'opacity-50' : 'opacity-100'
-      }`}
+      className={`bg-white p-4 rounded-lg shadow-md mb-3 cursor-grab border-l-4 border-l-blue-500 ${isDragging ? 'opacity-50' : 'opacity-100'
+        }`}
     >
       {isEditing ? (
         <div className="space-y-2">
@@ -69,6 +74,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onUpdate, onDelete }) 
             onChange={handleChange}
             className="w-full border rounded p-1"
           />
+          <input
+            name="category"
+            value={editedTask.category}
+            onChange={handleChange}
+            className="w-full border rounded p-1"
+            placeholder="Category"
+          />
           {editedTask.assignee !== undefined && (
             <input
               name="assignee"
@@ -79,13 +91,13 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onUpdate, onDelete }) 
             />
           )}
           <div className="flex justify-end space-x-2 mt-2">
-            <button 
+            <button
               onClick={handleCancel}
               className="px-2 py-1 bg-gray-200 rounded"
             >
               Cancel
             </button>
-            <button 
+            <button
               onClick={handleSave}
               className="px-2 py-1 bg-blue-500 text-white rounded"
             >
@@ -97,26 +109,36 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, onUpdate, onDelete }) 
         <div>
           <div className="flex justify-between items-start">
             <h3 className="font-bold text-lg">{task.title}</h3>
-            <div className="flex space-x-1">
-              <button 
+            <div className={`flex space-x-1 ${task.status === 'Completed' ? 'hidden' : ''}`}>
+              <button
                 onClick={handleEdit}
                 className="text-gray-500 hover:text-blue-500"
+                disabled={task.status === 'Completed'}
               >
                 ✏️
               </button>
-              <button 
+              <button
                 onClick={() => onDelete(task.id)}
                 className="text-gray-500 hover:text-red-500"
+                disabled={task.status === 'Completed'}
               >
                 🗑️
               </button>
             </div>
           </div>
           <p className="text-gray-600 mt-2">{task.description}</p>
-          <div className="mt-4 text-sm text-gray-500">
-            <p>Due: {new Date(task.dueDate).toLocaleDateString()}</p>
-            {task.category && <p className="mt-1">Category: {task.category}</p>}
-            {task.assignee && <p className="mt-1">Assigned to: {task.assignee}</p>}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <span className="text-sm text-gray-500">
+              Due: {new Date(task.dueDate).toLocaleDateString()}
+            </span>
+            <span className={`px-2 py-0.5 rounded-full text-xs ${categoryColor}`}>
+              {task.category}
+            </span>
+            {task.assignee && (
+              <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 text-xs">
+                👤 {task.assignee}
+              </span>
+            )}
           </div>
         </div>
       )}

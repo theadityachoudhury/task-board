@@ -11,15 +11,17 @@ interface ColumnProps {
   onTaskUpdate: (taskId: string, updates: Partial<Task>) => void;
   onTaskDelete: (taskId: string) => void;
   onTaskMove: (taskId: string, newStatus: TaskStatus) => void;
+  getCategoryColor: (task: Task) => string;
 }
 
-export const Column: React.FC<ColumnProps> = ({ 
-  title, 
-  status, 
-  tasks, 
-  onTaskUpdate, 
+export const Column: React.FC<ColumnProps> = ({
+  title,
+  status,
+  tasks,
+  onTaskUpdate,
   onTaskDelete,
-  onTaskMove 
+  onTaskMove,
+  getCategoryColor
 }) => {
   const [{ isOver }, drop] = useDrop({
     accept: 'task',
@@ -33,11 +35,10 @@ export const Column: React.FC<ColumnProps> = ({
   });
 
   return (
-    <div 
+    <div
       ref={drop as any}
-      className={`bg-gray-100 p-4 rounded-lg w-full md:w-1/3 min-h-[500px] transition-colors ${
-        isOver ? 'bg-blue-100 border-2 border-blue-300' : ''
-      }`}
+      className={`bg-gray-100 p-4 rounded-lg w-full md:w-1/3 min-h-[500px] transition-colors ${isOver ? 'bg-blue-100 border-2 border-blue-300' : ''
+        }`}
     >
       <h2 className="font-bold text-xl mb-4">{title} ({tasks.length})</h2>
       <div className="space-y-3">
@@ -47,6 +48,7 @@ export const Column: React.FC<ColumnProps> = ({
             task={task}
             onUpdate={onTaskUpdate}
             onDelete={onTaskDelete}
+            categoryColor={getCategoryColor(task)}
           />
         ))}
         {isOver && tasks.length === 0 && (
